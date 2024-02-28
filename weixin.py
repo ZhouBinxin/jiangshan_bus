@@ -1,55 +1,71 @@
-import os
+import logging
 
-import requests
-from dotenv import load_dotenv
+from flask import Flask, render_template
+from flask_weixin import Weixin
 
+from jiangshan_bus import JiangshanBus
 
-def get_access_token(appid, appsecret, force_refresh=False):
-    """
-    获取微信公众号access_token
+# 查询示例
+QUERY_EXAMPLE = '查询示例： 从凤林路口到江山站'
 
-    :param appid:
-    :param appsecret:
-    :param force_refresh: 是否强制刷新，默认False
-    :return:
-        - tuple: 包含access_token和expires_in的元组，如果获取失败，则返回(None, None)
-    """
-    url = 'https://api.weixin.qq.com/cgi-bin/stable_token'
-    payload = {
-        'grant_type': 'client_credential',
-        'appid': appid,
-        'secret': appsecret,
-        'force_refresh': force_refresh
-    }
-    response = requests.post(url, json=payload)
-    if response.status_code == 200:
-        data = response.json()
-        if data.get('errcode' != 0):
-            print(f"获取失败: {data.get('errcode')}, {data.get('errmsg')}")
-            return None, None
+# 用户关注公众号时给他推送一条消息
+ON_FOLLOW_MESSAGE = {
+    'title': '使用说明',
+    'description': '',
+    'picurl': '',
+    'url': '',
+}
 
-        access_token = data.get('access_token')
-        # access_token有效时长
-        expires_in = data.get('expires_in')
-        return access_token, expires_in
-    else:
-        print(f"获取失败: {response.status_code}, {response.text}")
-        return None, None
+app = Flask(__name__)
+app.config.from_object('config')
+
+weixin = Weixin(app)
+app.add_url_rule('/weixin', view_func=weixin.view_func)
+
+# 配置日志记录器
+log_file = 'error.log'
+logging.basicConfig(filename=log_file, level=logging.ERROR)  # 将日志级别设置为 ERROR
 
 
-def main():
-    load_dotenv()
+@weixin.register('*')
+def query(**kwargs):
+    username = kwargs.get('sender')
+    sender = kwargs.get('receiver')
+    message_type = kwargs.get('type')
 
-    APPID = os.environ['APPID']
-    APPSECRET = os.environ['APPSECRET']
+    def r(content):
+        return weixin.reply(
+            username, sender=sender, content=content
+        )
 
-    access_token, expires_in = get_access_token(APPID, APPSECRET)
-    if access_token:
-        print(f"访问令牌: {access_token}")
-        print(f"有效时长: {expires_in} 秒")
-    else:
-        print("获取访问令牌失败")
+    if message_type == 'event' and kwargs.get('event') == 'subscribe':
+        return weixin.reply(
+            username, type='news', sender=sender, articles=[ON_FOLLOW_MESSAGE]
+        )
+
+    content = kwargs.get('content')
+    if not content:
+        reply = '我好笨笨哦，还不懂你在说什么。\n%s' % QUERY_EXAMPLE
+        return r(reply)
+
+    if isinstance(content, str):
+        content = content.encode('utf-8')
+
+    stations = JiangshanBus.extract_stations(content)
+    lines = BeijingBus.extract_lines(content)
+    if len(stations) < 2:
+        reply = '没有结果，可能还不支持这条线路呢~ \n%s' % QUERY_EXAMPLE
+        return r(reply)
+
+    from_station, to_station = stations[:2]
+    lines = match_stations_with_lines(from_station, to_station, lines)
+    if not lines:
+        reply = '没有结果，可能还不支持这条线路呢~ \n%s' % QUERY_EXAMPLE
+        return r(reply)
+
+    reply = get_realtime_message(lines, from_station)
+    return r(reply)
 
 
 if __name__ == '__main__':
-    main()
+    app.run(debug=True, port=8484)
