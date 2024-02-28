@@ -3,14 +3,22 @@ from .line import BusLine
 
 
 class JiangshanBus(object):
+
     @classmethod
     def get_all_lines(cls):
         return BusLine.get_all_lines()
 
     @classmethod
+    def get_line_stations(cls, line):
+        return BusLine.get_stations(line)
+
+    @classmethod
     @cache.cached(timeout=3600)
     def get_all_stations(cls):
-        stations = [s for line in cls.get_all_lines() for s in line.stations]
+        stations = []
+        for line in cls.get_all_lines():
+            for s in cls.get_line_stations(line):
+                stations.append(s)
         return sorted(set(stations), key=lambda s: len(s.name), reverse=True)
 
     @classmethod

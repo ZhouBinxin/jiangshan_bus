@@ -4,3 +4,5 @@
 /.idea
 /config.py
 /LICENSE
+/error.log
+/offline_data/
