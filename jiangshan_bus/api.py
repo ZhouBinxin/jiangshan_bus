@@ -55,7 +55,7 @@ def get_line_site(line):
 
 
 def main():
-    lines = get_all_lines()
+    lines = get_line_condition(101)
     print(lines)
 
 
