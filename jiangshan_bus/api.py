@@ -14,17 +14,48 @@ def request_api(url, params):
     raise e
 
 
-def get_line_update_state():
+def get_all_lines():
+    """
+    获取所有线路
+    :return:
+    """
     logging.info('获取所有线路')
     params = {
-        'Action': 'GetAllRunningXianLu',
-        'KeyWord': '',
+        'Action': 'GetAllRunningXianLu'
+    }
+    return request_api(API_ENDPOINT, params)
+
+
+def get_line_condition(line):
+    """
+    获取指定线路车辆情况
+
+    :return:
+    """
+    logging.info('Fetching line: %s' % line)
+    params = {
+        'Action': 'GetXianLuCheKuang',
+        'XianLu': line,
+    }
+    return request_api(API_ENDPOINT, params)
+
+
+def get_line_site(line):
+    """
+    获取指定线路站点信息
+
+    :return:
+    """
+    logging.info('Fetching line: %s' % line)
+    params = {
+        'Action': 'GetXianLuZhanDian',
+        'XianLu': line,
     }
     return request_api(API_ENDPOINT, params)
 
 
 def main():
-    lines = get_line_update_state()
+    lines = get_all_lines()
     print(lines)
 
 
