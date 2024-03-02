@@ -2,7 +2,7 @@ import logging
 
 from flask import Flask, render_template
 from flask_weixin import Weixin
-
+from Weixin import access_token
 from jiangshan_bus import JiangshanBus
 
 # 查询示例
@@ -19,6 +19,7 @@ ON_FOLLOW_MESSAGE = {
 app = Flask(__name__)
 app.config.from_object('config')
 
+app.config['WEIXIN_TOKEN'] = access_token.WX.get_access_token(app.config['APP_ID'], app.config['APP_SECRET'])
 weixin = Weixin(app)
 app.add_url_rule('/weixin', view_func=weixin.view_func)
 
@@ -33,38 +34,46 @@ def query(**kwargs):
     sender = kwargs.get('receiver')
     message_type = kwargs.get('type')
 
-    def r(content):
-        return weixin.reply(
-            username, sender=sender, content=content
-        )
+    # def r(content):
+    #     return weixin.reply(
+    #         username, sender=sender, content=content
+    #     )
+    #
+    # if message_type == 'event' and kwargs.get('event') == 'subscribe':
+    #     return weixin.reply(
+    #         username, type='news', sender=sender, articles=[ON_FOLLOW_MESSAGE]
+    #     )
+    #
+    # content = kwargs.get('content')
+    # if not content:
+    #     reply = '我好笨笨哦，还不懂你在说什么。\n%s' % QUERY_EXAMPLE
+    #     return r(reply)
+    #
+    # if isinstance(content, str):
+    #     content = content.encode('utf-8')
+    #
+    # stations = JiangshanBus.extract_stations(content)
+    # # lines = BeijingBus.extract_lines(content)
+    # if len(stations) < 2:
+    #     reply = '没有结果，可能还不支持这条线路呢~ \n%s' % QUERY_EXAMPLE
+    #     return r(reply)
 
-    if message_type == 'event' and kwargs.get('event') == 'subscribe':
-        return weixin.reply(
-            username, type='news', sender=sender, articles=[ON_FOLLOW_MESSAGE]
-        )
+    # from_station, to_station = stations[:2]
+    # lines = match_stations_with_lines(from_station, to_station, lines)
+    # if not lines:
+    #     reply = '没有结果，可能还不支持这条线路呢~ \n%s' % QUERY_EXAMPLE
+    #     return r(reply)
+    #
+    # reply = get_realtime_message(lines, from_station)
+    # return r(reply)
 
-    content = kwargs.get('content')
-    if not content:
-        reply = '我好笨笨哦，还不懂你在说什么。\n%s' % QUERY_EXAMPLE
-        return r(reply)
 
-    if isinstance(content, str):
-        content = content.encode('utf-8')
-
-    stations = JiangshanBus.extract_stations(content)
-    lines = BeijingBus.extract_lines(content)
-    if len(stations) < 2:
-        reply = '没有结果，可能还不支持这条线路呢~ \n%s' % QUERY_EXAMPLE
-        return r(reply)
-
-    from_station, to_station = stations[:2]
-    lines = match_stations_with_lines(from_station, to_station, lines)
-    if not lines:
-        reply = '没有结果，可能还不支持这条线路呢~ \n%s' % QUERY_EXAMPLE
-        return r(reply)
-
-    reply = get_realtime_message(lines, from_station)
-    return r(reply)
+@app.route('/list')
+def list_supported_lines():
+    names = set()
+    for line in JiangshanBus.get_all_lines():
+        names.add(line)
+    return render_template('list.html', line_names=names)
 
 
 if __name__ == '__main__':

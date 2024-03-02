@@ -29,22 +29,28 @@ class BusLine(object):
         :return:
         """
         lines_data = api.get_all_lines()
-        lines = []
+        lines = {}
         for line_data in lines_data['RetData']['XianLuList']:
-            lines.append(line_data['XianLu'])
+            stations0 = cls.get_stations(line_data['XianLu'], 0)
+            stations1 = cls.get_stations(line_data['XianLu'], 1)
+            lines[line_data['XianLu']] = {
+                f"{stations0[0]} -> {stations1[0]}": stations0,
+                f"{stations1[0]} -> {stations0[0]}": stations1
+            }
 
         return lines
 
     @classmethod
-    def get_stations(cls, line):
+    def get_stations(cls, line, direction):
         """
         获取公交线路的所有站点
 
         :param line: 公交线路
+        :param direction: 方向，0表示上行，1表示下行
         :return:
         """
         stations_data = api.get_line_site(line)
-        stations_data = json.loads(stations_data['RetData']['XianLuList'][0]['XianLuZD'])
+        stations_data = json.loads(stations_data['RetData']['XianLuList'][direction]['XianLuZD'])
         print(stations_data)
         stations = []
         for station_data in stations_data['xianluzhandian']:

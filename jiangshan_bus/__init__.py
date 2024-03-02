@@ -9,6 +9,10 @@ class JiangshanBus(object):
         return BusLine.get_all_lines()
 
     @classmethod
+    def get_run_lines(cls):
+        return BusLine.get_run_lines()
+
+    @classmethod
     def get_line_stations(cls, line):
         return BusLine.get_stations(line)
 
@@ -19,7 +23,7 @@ class JiangshanBus(object):
         for line in cls.get_all_lines():
             for s in cls.get_line_stations(line):
                 stations.append(s)
-        return sorted(set(stations), key=lambda s: len(s.name), reverse=True)
+        return stations
 
     @classmethod
     def extract_stations(cls, sentence):

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>公交线路信息</title>
+    <style>
+        .bus-stop {
+            display: inline-block;
+            padding: 5px;
+            border: 1px solid #ccc;
+            margin: 5px;
+        }
+
+        .arrow {
+            display: inline-block;
+            width: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h2>公交线路信息：</h2>
+<ul>
+    {% for line, directions in lines.items() %}
+    <li>
+        <strong>{{ line }}</strong>:
+        <ul>
+            {% for direction, stops in directions.items() %}
+            <li>{{ direction }}：
+                <br>
+                {% for stop in stops[:-1] %}
+                <span class="bus-stop">{{ stop }}</span>
+                <span class="arrow">&#8594;</span>
+                {% endfor %}
+                <span class="bus-stop">{{ stops[-1] }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+</body>
+</html>
