@@ -17,7 +17,7 @@ class JiangshanBus(object):
         return BusLine.get_stations(line)
 
     @classmethod
-    @cache.cached(timeout=3600)
+    @cache.cache_on_arguments()
     def get_all_stations(cls):
         stations = []
         for line in cls.get_all_lines():

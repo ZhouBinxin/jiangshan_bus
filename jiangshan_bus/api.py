@@ -1,5 +1,7 @@
+import json
 import logging
 import requests
+import xmltodict
 
 API_ENDPOINT = 'http://qzjs.shishigj.com/WeixinMP/WMPWebService/GJ.ShiShiGJ/HandlerX.ashx'
 
@@ -8,9 +10,10 @@ def request_api(url, params):
     for _ in range(3):
         try:
             r = requests.get(url, params=params, verify=False)
-            return r.json()
         except (ConnectionError, requests.exceptions.Timeout) as e:
             continue
+        else:
+            return json.loads(r.text)
     raise e
 
 
@@ -53,9 +56,21 @@ def get_line_site(line):
     }
     return request_api(API_ENDPOINT, params)
 
+def search(key):
+    """
+    搜索线路或站点
+
+    :param key: 线路或站点
+    :return:
+    """
+    params = {
+        'Action': 'SearchXianLu',
+        'KeyWord': key,
+    }
+    return request_api(API_ENDPOINT, params)
 
 def main():
-    lines = get_line_condition(101)
+    lines = search("火车站")
     print(lines)
 
 

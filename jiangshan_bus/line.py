@@ -1,73 +1,61 @@
 import json
 
-from . import api
+from . import api, cache
 
 
 class BusLine(object):
-    def __init__(self):
-        pass
+    def __init__(self, **kwargs):
+        self.name = None
+        self.stations_up = []
+        self.stations_down = []
+        for name, value in kwargs.items():
+            setattr(self, name, value)
+
+    def __repr__(self):
+        return '<Line: %s>' % self.name
+
+    @classmethod
+    @cache.cache_on_arguments()
+    def create_line(cls, bus_line):
+        line = cls(**{
+            'name': bus_line['XianLu'],
+            'type': bus_line['XLCatgory'],
+            'display_name': bus_line['XLDisplayName'],
+            'notice': bus_line['XLNoticeTxt'],
+            'style': bus_line['XLNoticeStyle'],
+            'num': bus_line['OrderNum'],
+            'sort_num': bus_line['XLParmDefOrderNum'],
+            'time': bus_line['XianLuPingJunHaoShi']
+        })
+
+        stations = api.get_line_site(line.name)
+        up_bound = json.loads(stations['RetData']['XianLuList'][0]['XianLuZD'])
+        for station in up_bound['xianluzhandian']:
+            line.stations_up.append(station['name'])
+        down_bound = json.loads(stations['RetData']['XianLuList'][1]['XianLuZD'])
+        for station in down_bound['xianluzhandian']:
+            line.stations_down.append(station['name'])
+
+        # print(line.stations_up)
+        # print(line.stations_down)
+
+        return line
+
+    @classmethod
+    @cache.cache_on_arguments()
+    def get_line(cls, type):
+        resp_doc = api.get_all_lines()
+        bus_lines = resp_doc['RetData'][type]
+
+        return [cls.create_line(bus_line) for bus_line in bus_lines]
 
     @classmethod
     def get_all_lines(cls):
-        """
-        获取所有公交线路
-
-        :return:
-        """
-        lines_data = api.get_all_lines()
-        lines = []
-        for line_data in lines_data['RetData']['XianLuListAll']:
-            lines.append(line_data['XianLu'])
-
+        lines = cls.get_line('XianLuListAll')
+        print(lines)
         return lines
 
     @classmethod
     def get_run_lines(cls):
-        """
-        获取所有正在运行的公交线路
-
-        :return:
-        """
-        lines_data = api.get_all_lines()
-        lines = {}
-        for line_data in lines_data['RetData']['XianLuList']:
-            stations0 = cls.get_stations(line_data['XianLu'], 0)
-            stations1 = cls.get_stations(line_data['XianLu'], 1)
-            lines[line_data['XianLu']] = {
-                f"{stations0[0]} -> {stations1[0]}": stations0,
-                f"{stations1[0]} -> {stations0[0]}": stations1
-            }
-
+        lines = cls.get_line('XianLuList')
         return lines
-
-    @classmethod
-    def get_stations(cls, line, direction):
-        """
-        获取公交线路的所有站点
-
-        :param line: 公交线路
-        :param direction: 方向，0表示上行，1表示下行
-        :return:
-        """
-        stations_data = api.get_line_site(line)
-        stations_data = json.loads(stations_data['RetData']['XianLuList'][direction]['XianLuZD'])
-        print(stations_data)
-        stations = []
-        for station_data in stations_data['xianluzhandian']:
-            stations.append(station_data['name'])
-
-        return stations
-
-
-def main():
-    bus_line = BusLine()
-    lines = bus_line.get_all_lines()
-    # print('所有线路', lines)
-    lines = bus_line.get_run_lines()
-    # print('正在运行的线路', lines)
-    station = bus_line.get_stations(lines[0])
-    print(station)
-
-
-if __name__ == '__main__':
-    main()

@@ -1,11 +1,8 @@
-from flask import Flask
-from flask_caching import Cache
+from dogpile.cache import make_region
 
-app = Flask(__name__)
+# 使用内存作为缓存后端
+cache_config = {
+    'backend': 'dogpile.cache.memory',
+}
 
-# 配置 Flask-Caching
-app.config['CACHE_TYPE'] = 'filesystem'
-app.config['CACHE_DIR'] = 'offline_data'  # 缓存目录
-
-# 初始化缓存
-cache = Cache(app)
+cache = make_region().configure(**cache_config)
