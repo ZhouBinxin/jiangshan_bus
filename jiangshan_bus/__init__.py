@@ -9,6 +9,10 @@ class JiangshanBus(object):
         return BusLine.get_all_lines()
 
     @classmethod
+    def search(cls,keyword):
+        return BusLine.sea
+
+    @classmethod
     def get_run_lines(cls):
         return BusLine.get_run_lines()
 

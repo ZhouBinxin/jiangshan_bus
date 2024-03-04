@@ -59,3 +59,13 @@ class BusLine(object):
     def get_run_lines(cls):
         lines = cls.get_line('XianLuList')
         return lines
+
+    @classmethod
+    def search(cls, key):
+        return api.search(key)
+
+    @classmethod
+    def search_line(cls,name):
+        for line in cls.get_all_lines():
+            if name in line.name:
+                yield line
