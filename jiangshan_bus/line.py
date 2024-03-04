@@ -1,5 +1,6 @@
 import json
-
+import re
+from datetime import datetime
 from . import api, cache
 
 
@@ -65,7 +66,43 @@ class BusLine(object):
         return api.search(key)
 
     @classmethod
-    def search_line(cls,name):
+    def search_line(cls, name):
         for line in cls.get_all_lines():
             if name in line.name:
                 yield line
+
+    def get_realtime_data(self, name):
+        resp_doc = api.get_line_condition(name)
+        bus_up = resp_doc['RetData']['XianLuList'][0]['ZT']
+        bus_down = resp_doc['RetData']['XianLuList'][1]['ZT']
+        up = []
+        down = []
+        for bus in bus_up:
+            up.append(self._format_realtime_data(bus))
+        for bus in bus_down:
+            down.append(self._format_realtime_data(bus))
+
+        return up, down
+
+    def _format_realtime_data(self, data):
+        def num(string):
+            result = re.search(r'\d+', string)
+
+            if result:
+                extracted_number = int(result.group())
+                return extracted_number
+            else:
+                print(f"提取公交车位置出现错误{string}")
+
+        return {
+            'name': data['XianLuName'],
+            'postion': num(data['postionId']),
+            'state': data['zhuangtai'],
+            'next_station_name': datetime.strptime(data['LastValid_Time'], "%Y-%m-%dT%H:%M:%S"),
+            'lat': data['LastValid_Latitude'],
+            'lon': data['LastVlaid_Longitude'],
+            'angle': data['LastValid_MoveAngle'],
+            'speed': data['LastValid_MoveSpeed'],
+            'id': data['CheLiangID'],
+            "cph": data['CheLiangCPH']
+        }
