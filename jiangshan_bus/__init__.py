@@ -1,3 +1,5 @@
+import re
+
 from .cache import cache
 from .line import BusLine
 
@@ -9,34 +11,40 @@ class JiangshanBus(object):
         return BusLine.get_all_lines()
 
     @classmethod
-    def search(cls,keyword):
-        return BusLine.sea
+    def search(cls, keyword):
+        return BusLine.search(keyword)
 
     @classmethod
-    def get_run_lines(cls):
-        return BusLine.get_run_lines()
-
-    @classmethod
-    def get_line_stations(cls, line):
-        return BusLine.get_stations(line)
+    def search_lines(cls, name):
+        return list(BusLine.search(name))
 
     @classmethod
     @cache.cache_on_arguments()
     def get_all_stations(cls):
-        stations = []
+        stations_up = []
+        stations_down = []
         for line in cls.get_all_lines():
-            for s in cls.get_line_stations(line):
-                stations.append(s)
-        return stations
+            for station in line.stations_up:
+                stations_up.append(station)
+            for station in line.stations_down:
+                stations_down.append(station)
+
+        return sorted(set(stations_up), key=lambda s: len(s.name), reverse=True), sorted(set(stations_down),
+                                                                                         key=lambda s: len(s.name),
+                                                                                         reverse=True)
+
+    @classmethod
+    def extract_lines(cls, sentence):
+        numbers = re.findall(r'\d+', sentence)
+        if not numbers:
+            return []
+
+        lines = JiangshanBus.search_lines(numbers[0])
+        lines = [line for line in lines if line.num == numbers[0]]
+        return lines
 
     @classmethod
     def extract_stations(cls, sentence):
-        """
-        从句子中提取出所有的车站
-
-        :param sentence:
-        :return:
-        """
         original_sentence = sentence
         matches = set()
         for s in cls.get_all_stations():

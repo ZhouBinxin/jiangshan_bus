@@ -53,7 +53,6 @@ class BusLine(object):
     @classmethod
     def get_all_lines(cls):
         lines = cls.get_line('XianLuListAll')
-        print(lines)
         return lines
 
     @classmethod
