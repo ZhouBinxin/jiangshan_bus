@@ -29,9 +29,7 @@ class JiangshanBus(object):
             for station in line.stations_down:
                 stations_down.append(station)
 
-        return sorted(set(stations_up), key=lambda s: len(s.name), reverse=True), sorted(set(stations_down),
-                                                                                         key=lambda s: len(s.name),
-                                                                                         reverse=True)
+        return stations_up,stations_down
 
     @classmethod
     def extract_lines(cls, sentence):

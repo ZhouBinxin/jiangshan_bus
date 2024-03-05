@@ -1,43 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>公交线路信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公交实时信息</title>
     <style>
-        .bus-stop {
-            display: inline-block;
-            padding: 5px;
-            border: 1px solid #ccc;
-            margin: 5px;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
         }
 
-        .arrow {
-            display: inline-block;
-            width: 30px;
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3 {
+            color: #333;
             text-align: center;
         }
+
+        .announcement, .search-box, .email-reminder {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .announcement h2, .search-box h2, .email-reminder h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .refresh {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .refresh p {
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .refresh button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .refresh button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-box form, .email-reminder form {
+            text-align: center;
+        }
+
+        .search-box input[type="text"], .email-reminder input[type="email"] {
+            padding: 10px;
+            width: 60%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .search-box button, .email-reminder button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-box button:hover, .email-reminder button:hover {
+            background-color: #218838;
+        }
+
+        .bus-lines {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .bus-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .station-button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition-duration: 0.4s;
+        }
+
+        .bus-button:hover {
+            background-color: #45a049;
+        }
+
+
     </style>
 </head>
 <body>
-<h2>公交线路信息：</h2>
-<ul>
-    {% for line, directions in lines.items() %}
-    <li>
-        <strong>{{ line }}</strong>:
-        <ul>
-            {% for direction, stops in directions.items() %}
-            <li>{{ direction }}：
-                <br>
-                {% for stop in stops[:-1] %}
-                <span class="bus-stop">{{ stop }}</span>
-                <span class="arrow">&#8594;</span>
-                {% endfor %}
-                <span class="bus-stop">{{ stops[-1] }}</span>
-            </li>
+<div class="container">
+    <h1>{{line}}公交实时信息</h1>
+
+    <div class="email-reminder">
+        <h2>设置邮件提醒</h2>
+        <form action="/email-reminder" method="POST">
+            <label for="email">请输入您的邮箱地址：</label>
+            <input type="email" id="email" name="email" required>
+            <button type="submit">设置提醒</button>
+        </form>
+    </div>
+
+    <div class="bus-lines">
+        <h2>线路信息</h2>
+        <h3>上行</h3>
+        <div>
+            {% for station in stations_up[:-1] %}
+            <a href="/stations/{{ station }}" class="station-button">{{ station }} </a>
+            <a class="arrow">&#8594;</a>
             {% endfor %}
-        </ul>
-    </li>
-    {% endfor %}
-</ul>
+            <a href="/stations/{{ station }}" class="station-button">{{ stations_up[-1] }} </a>
+        </div>
+
+        <h3>下行</h3>
+        <div>
+            {% for station in stations_down[:-1] %}
+            <a href="/stations/{{ station }}" class="station-button">{{ station }}</a>
+            <a class="arrow">&#8594;</a>
+            {% endfor %}
+            <a href="/stations/{{ station }}" class="station-button">{{ stations_down[-1] }} </a>
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>

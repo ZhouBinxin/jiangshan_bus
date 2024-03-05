@@ -29,7 +29,13 @@ def index():
 
 @app.route('/lines/<line>')
 def show_bus_line(line):
-    return line
+    stations_up = []
+    stations_down = []
+    for lines in JiangshanBus.get_all_lines():
+        if lines.name == line:
+            stations_up = lines.stations_up
+            stations_down = lines.stations_down
+    return render_template('line.html', line=line, stations_up=stations_up, stations_down=stations_down)
 
 
 if __name__ == '__main__':
