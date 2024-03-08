@@ -11,6 +11,10 @@ class JiangshanBus(object):
         return BusLine.get_all_lines()
 
     @classmethod
+    def get_run_lines(cls):
+        return BusLine.get_run_lines()
+
+    @classmethod
     def search(cls, keyword):
         return BusLine.search(keyword)
 
@@ -29,7 +33,7 @@ class JiangshanBus(object):
             for station in line.stations_down:
                 stations_down.append(station)
 
-        return stations_up,stations_down
+        return stations_up, stations_down
 
     @classmethod
     def extract_lines(cls, sentence):
@@ -51,3 +55,7 @@ class JiangshanBus(object):
                 sentence = sentence.replace(s.name, '')
         # 按在sentence中出现的顺序排序
         return sorted(matches, key=lambda s: original_sentence.find(s.name))
+
+    @classmethod
+    def get_bus(cls, station):
+        return BusLine.get_realtime_data(station)

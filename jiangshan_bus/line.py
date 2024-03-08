@@ -70,20 +70,22 @@ class BusLine(object):
             if name in line.name:
                 yield line
 
-    def get_realtime_data(self, name):
+    @classmethod
+    def get_realtime_data(cls, name):
         resp_doc = api.get_line_condition(name)
         bus_up = resp_doc['RetData']['XianLuList'][0]['ZT']
         bus_down = resp_doc['RetData']['XianLuList'][1]['ZT']
         up = []
         down = []
         for bus in bus_up:
-            up.append(self._format_realtime_data(bus))
+            up.append(cls._format_realtime_data(bus))
         for bus in bus_down:
-            down.append(self._format_realtime_data(bus))
+            down.append(cls._format_realtime_data(bus))
 
         return up, down
 
-    def _format_realtime_data(self, data):
+    @classmethod
+    def _format_realtime_data(cls, data):
         def num(string):
             result = re.search(r'\d+', string)
 

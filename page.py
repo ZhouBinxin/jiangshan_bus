@@ -22,9 +22,12 @@ app.config.from_object('config')
 @app.route('/')
 def index():
     names = defaultdict(list)
+    run_names = []
     for line in JiangshanBus.get_all_lines():
         names[line.type].append(line.name)
-    return render_template('index.html', names=names)
+    for line in JiangshanBus.get_run_lines():
+        run_names.append(line.name)
+    return render_template('index.html', names=names, run_names=run_names)
 
 
 @app.route('/lines/<line>')
@@ -36,6 +39,12 @@ def show_bus_line(line):
             stations_up = lines.stations_up
             stations_down = lines.stations_down
     return render_template('line.html', line=line, stations_up=stations_up, stations_down=stations_down)
+
+
+@app.route('/stations/<station>')
+def show_bus(station):
+    stations = JiangshanBus.get_bus(station)
+    print(stations)
 
 
 if __name__ == '__main__':

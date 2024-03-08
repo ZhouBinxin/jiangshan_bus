@@ -26,7 +26,7 @@
             text-align: center;
         }
 
-        .announcement, .search-box, .email-reminder {
+        .announcement, .search-box {
             margin-bottom: 20px;
             padding: 20px;
             background-color: #f9f9f9;
@@ -38,40 +38,17 @@
             word-wrap: break-word;
         }
 
-        .announcement h2, .search-box h2, .email-reminder h2 {
+        .announcement h2, .search-box h2 {
             margin-top: 0;
             margin-bottom: 10px;
             color: #555;
         }
 
-        .refresh {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .refresh p {
-            color: #888;
-            margin-bottom: 10px;
-        }
-
-        .refresh button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .refresh button:hover {
-            background-color: #0056b3;
-        }
-
-        .search-box form, .email-reminder form {
+        .search-box form {
             text-align: center;
         }
 
-        .search-box input[type="text"], .email-reminder input[type="email"] {
+        .search-box input[type="text"] {
             padding: 10px;
             width: 60%;
             border: 1px solid #ccc;
@@ -79,7 +56,7 @@
             outline: none;
         }
 
-        .search-box button, .email-reminder button {
+        .search-box button {
             padding: 10px 20px;
             background-color: #28a745;
             color: #fff;
@@ -88,7 +65,7 @@
             cursor: pointer;
         }
 
-        .search-box button:hover, .email-reminder button:hover {
+        .search-box button:hover {
             background-color: #218838;
         }
 
@@ -97,19 +74,11 @@
             margin-top: 20px;
         }
 
-        .bus-list {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .bus-button {
+        .line {
             display: inline-block;
             margin: 10px;
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #888888;
             color: white;
             text-align: center;
             text-decoration: none;
@@ -120,8 +89,8 @@
             transition-duration: 0.4s;
         }
 
-        .bus-button:hover {
-            background-color: #45a049;
+        .run{
+            background-color: #4CAF50;
         }
 
 
@@ -130,11 +99,6 @@
 <body>
 <div class="container">
     <h1>公交实时信息</h1>
-
-    <div class="refresh">
-        <!--            <p>数据已更新！</p>-->
-        <button onclick="location.reload()">刷新</button>
-    </div>
 
     <div class="announcement">
         <h2>公告</h2>
@@ -149,22 +113,17 @@
         </form>
     </div>
 
-    <div class="email-reminder">
-        <h2>设置邮件提醒</h2>
-        <form action="/email-reminder" method="POST">
-            <label for="email">请输入您的邮箱地址：</label>
-            <input type="email" id="email" name="email" required>
-            <button type="submit">设置提醒</button>
-        </form>
-    </div>
-
     <div class="bus-lines">
         <h2>线路信息</h2>
         {% for type, lines in names.items() %}
         <div>
             <h3>{{type}}</h3>
             {% for line in lines %}
-            <a href="/lines/{{ line }}" class="bus-button">{{ line }}</a>
+            {% if line in run_names %}
+            <a href="/lines/{{ line }}" class="line run">{{ line }}</a>
+            {% else %}
+            <a href="/lines/{{ line }}" class="line">{{ line }}</a>
+            {% endif %}
             {% endfor %}
         </div>
         {% endfor %}
