@@ -4,17 +4,6 @@ from collections import defaultdict
 from flask import Flask, render_template, request, jsonify
 from jiangshan_bus import JiangshanBus
 
-# 查询示例
-QUERY_EXAMPLE = '查询示例： 从西坝河到将台路口西'
-
-# 用户关注公众号时给他推送一条消息
-ON_FOLLOW_MESSAGE = {
-    'title': '使用说明',
-    'description': '',
-    'picurl': 'http://doora.qiniudn.com/H9v9n.jpg',
-    'url': 'http://t.cn/Rz0J1V6',
-}
-
 app = Flask(__name__)
 app.config.from_object('config')
 
@@ -41,10 +30,10 @@ def show_bus_line(line):
     return render_template('line.html', line=line, stations_up=stations_up, stations_down=stations_down)
 
 
-@app.route('/stations/<station>')
-def show_bus(station):
-    stations = JiangshanBus.get_bus(station)
-    print(stations)
+@app.route('/bus/<line>')
+def show_bus(line):
+    bus = JiangshanBus.get_bus(line)
+    return render_template('bus.html', bus=bus)
 
 
 if __name__ == '__main__':

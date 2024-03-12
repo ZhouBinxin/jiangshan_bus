@@ -73,8 +73,12 @@ class BusLine(object):
     @classmethod
     def get_realtime_data(cls, name):
         resp_doc = api.get_line_condition(name)
-        bus_up = resp_doc['RetData']['XianLuList'][0]['ZT']
-        bus_down = resp_doc['RetData']['XianLuList'][1]['ZT']
+        # print(resp_doc)
+        bus_up = json.loads(resp_doc['RetData']['XianLuList'][0]['XianLuZT'])
+        bus_up = bus_up['ZT']
+        print(bus_up)
+        bus_down = json.loads(resp_doc['RetData']['XianLuList'][1]['XianLuZT'])
+        bus_down = bus_down['ZT']
         up = []
         down = []
         for bus in bus_up:
@@ -101,7 +105,7 @@ class BusLine(object):
             'state': data['zhuangtai'],
             'next_station_name': datetime.strptime(data['LastValid_Time'], "%Y-%m-%dT%H:%M:%S"),
             'lat': data['LastValid_Latitude'],
-            'lon': data['LastVlaid_Longitude'],
+            'lon': data['LastValid_Longitude'],
             'angle': data['LastValid_MoveAngle'],
             'speed': data['LastValid_MoveSpeed'],
             'id': data['CheLiangID'],

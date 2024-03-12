@@ -26,7 +26,7 @@
             text-align: center;
         }
 
-        .announcement, .search-box, .email-reminder {
+        .email-reminder {
             margin-bottom: 20px;
             padding: 20px;
             background-color: #f9f9f9;
@@ -38,11 +38,6 @@
             margin-top: 0;
             margin-bottom: 10px;
             color: #555;
-        }
-
-        .refresh {
-            text-align: center;
-            margin-bottom: 20px;
         }
 
         .refresh p {
@@ -93,14 +88,6 @@
             margin-top: 20px;
         }
 
-        .bus-list {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
         .station-button {
             display: inline-block;
             margin: 10px;
@@ -115,12 +102,6 @@
             border-radius: 5px;
             transition-duration: 0.4s;
         }
-
-        .bus-button:hover {
-            background-color: #45a049;
-        }
-
-
     </style>
 </head>
 <body>
@@ -141,19 +122,19 @@
         <h3>上行</h3>
         <div>
             {% for station in stations_up[:-1] %}
-            <a href="/stations/{{ station }}" class="station-button">{{ station }} </a>
+            <a href="/bus/{{ line }}" class="station-button">{{ station }} </a>
             <a class="arrow">&#8594;</a>
             {% endfor %}
-            <a href="/stations/{{ station }}" class="station-button">{{ stations_up[-1] }} </a>
+            <a href="/bus/{{ line }}" class="station-button">{{ stations_up[-1] }} </a>
         </div>
 
         <h3>下行</h3>
         <div>
             {% for station in stations_down[:-1] %}
-            <a href="/stations/{{ station }}" class="station-button">{{ station }}</a>
+            <a href="/bus/{{ line }}" class="station-button">{{ station }}</a>
             <a class="arrow">&#8594;</a>
             {% endfor %}
-            <a href="/stations/{{ station }}" class="station-button">{{ stations_down[-1] }} </a>
+            <a href="/bus/{{ line }}" class="station-button">{{ stations_down[-1] }} </a>
         </div>
 
     </div>
