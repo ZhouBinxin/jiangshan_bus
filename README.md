@@ -9,5 +9,3 @@
 ### Quick Start
 
 * `pip install -r requirements.txt` 安装依赖
-
-项目自带了一个终端中的查询工具作为例子，运行： `python manage.py cli`

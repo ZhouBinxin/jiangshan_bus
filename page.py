@@ -32,8 +32,8 @@ def show_bus_line(line):
 
 @app.route('/bus/<line>')
 def show_bus(line):
-    bus = JiangshanBus.get_bus(line)
-    return render_template('bus.html', bus=bus)
+    buses = JiangshanBus.get_bus(line)
+    return render_template('bus.html', buses=buses)
 
 
 if __name__ == '__main__':

@@ -3,10 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>车况</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-{% for b in bus %}
-    <p>{{ b }}</p>
-{% endfor %}
+<!--[{'name': '101', 'postion': 3, 'state': 'c', 'next_station_name': datetime.datetime(2024, 3, 16, 20, 54, 2), 'lat': 118.610994, 'lon': 28.714325, 'angle': 15.0, 'speed': 45.4, 'id': '', 'cph': ''}, {'name': '101', 'postion': 4, 'state': 'c', 'next_station_name': datetime.datetime(2024, 3, 16, 20, 53, 22), 'lat': 118.609888, 'lon': 28.715636, 'angle': 202.0, 'speed': 0.0, 'id': '', 'cph': ''}]-->
+    <table border="1">
+        <tr>
+            <th>车牌号</th>
+            <th>位置</th>
+            <th>状态</th>
+            <th>下一站</th>
+            <th>经度</th>
+            <th>纬度</th>
+            <th>角度</th>
+            <th>速度</th>
+        </tr>
+        {% for bus in buses %}
+        {% for b in bus %}
+        <tr>
+            <td>{{ b.name }}</td>
+            <td>{{ b.postion }}</td>
+            <td>{{ b.state }}</td>
+            <td>{{ b.next_station_name }}</td>
+            <td>{{ b.lat }}</td>
+            <td>{{ b.lon }}</td>
+            <td>{{ b.angle }}</td>
+            <td>{{ b.speed }}</td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+    </table>
 </body>
 </html>
