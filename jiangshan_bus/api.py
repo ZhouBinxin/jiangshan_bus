@@ -13,7 +13,8 @@ def request_api(url, params):
         except (ConnectionError, requests.exceptions.Timeout) as e:
             continue
         else:
-            return json.loads(r.text)
+            print(r)
+            return r.text
     raise e
 
 

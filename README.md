@@ -1,5 +1,7 @@
 ## 江山实时公交
 
+⚠️江山公交已改用掌上公交
+
 该项目是江山实时公交查询接口的Python绑定，参考项目：[https://github.com/wong2/beijing_bus](https://github.com/wong2/beijing_bus)
 
 ### 警告
@@ -9,3 +11,4 @@
 ### Quick Start
 
 * `pip install -r requirements.txt` 安装依赖
+
